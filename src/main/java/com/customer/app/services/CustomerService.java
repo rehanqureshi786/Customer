@@ -11,6 +11,9 @@ public interface CustomerService {
 	public List<CustomerModel> getAllCustomers();
 
 	public CustomerModel getCustomerByName(String name);
-	 public String findByUsernameAndPassword(String username,String password);
+	public String findByUsernameAndPassword(String username,String password);
+	
+	public CustomerModel getCustomerById(int id);
+	
 
-}
+}	

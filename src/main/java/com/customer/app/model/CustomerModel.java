@@ -7,8 +7,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import lombok.Builder;
+
+@Builder
 @Entity(name = "CustomerModel")
 @Table(name = "customer")
+
 public class CustomerModel {
 
 	@Id
@@ -75,4 +79,17 @@ public class CustomerModel {
 		this.email = email;
 	}
 
+	public CustomerModel(int cust_id, String name, String phone, String email, String username, String password) {
+		super();
+		this.cust_id = cust_id;
+		this.name = name;
+		this.phone = phone;
+		this.email = email;
+		this.username = username;
+		this.password = password;
+	}
+
+	public CustomerModel() { // TODO Auto-generated constructor stub
+
+	}
 }

@@ -6,6 +6,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.customer.app.exception.ResourceAlreadyExistException;
+import com.customer.app.exception.ResourceNotFoundException;
 import com.customer.app.model.CustomerModel;
 import com.customer.app.services.CustomerServiceImpl;
 
@@ -23,16 +27,16 @@ import com.customer.app.services.CustomerServiceImpl;
 @RequestMapping("/customer")
 public class CustomerController {
 
+	public static final Logger logger =  LoggerFactory.getLogger(CustomerController.class);
+	
 	@Autowired
 	private CustomerServiceImpl customerService;
 
 	List<CustomerModel> list = new ArrayList<CustomerModel>();
 
 	@RequestMapping(value = "/addcustomer", method = RequestMethod.POST)
-	public CustomerModel addCustomer(@RequestBody CustomerModel customerModel) {
-		list.add(customerModel);
-		System.out.println("Customer Added");
-		return customerModel;
+	public CustomerModel addCustomer(@RequestBody CustomerModel customerModel) throws ResourceAlreadyExistException{
+		return customerService.addCustomer(customerModel);
 	}
 
 	@RequestMapping(value = "/getcustomers", method = RequestMethod.GET)
@@ -46,15 +50,18 @@ public class CustomerController {
 	}
 
 	@GetMapping("/getcustomerbyname/{name}")
-	public ResponseEntity getCustomerByName(@PathVariable("name") String name) {
+	public ResponseEntity<Object> getCustomerByName(@PathVariable("name") String name)
+			throws ResourceNotFoundException {
 		// System.out.println("System Fault Customer");
+
 		CustomerModel model = customerService.getCustomerByName(name);
 		System.out.println("Customer Object : " + model);
 
 		if (model != null) {
-			return new ResponseEntity<CustomerModel>(model, HttpStatus.OK);
+			return new ResponseEntity<>(model, HttpStatus.OK);
 		}
-		return new ResponseEntity<String>("Customer Not Found By there Name : " + name, HttpStatus.NOT_FOUND);
+		logger.error("Customer Not Found By there Name :"+name);
+		throw new ResourceNotFoundException("Customer Not Found By there Name : " + name);//, HttpStatus.NOT_FOUND);
 	}
 
 	@GetMapping("/customerlogin/{username}/{password}")
@@ -73,5 +80,21 @@ public class CustomerController {
 					HttpStatus.NOT_FOUND);
 		}
 	}
+	
+	@GetMapping("/customerbyid/{id}")
+	public ResponseEntity<CustomerModel> getCustomerById(@PathVariable("id") int id)throws ResourceNotFoundException
+	{
+		CustomerModel model=customerService.getCustomerById(id);
+		if(model!=null)
+		{
+			return new ResponseEntity<CustomerModel>(model,HttpStatus.OK);
+		}
+		else
+		{
+			throw new ResourceNotFoundException("Customer Not Found with ID: "+id);
+		}
+	}
+ 	
+	
 
 }
