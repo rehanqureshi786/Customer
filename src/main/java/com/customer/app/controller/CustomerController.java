@@ -33,9 +33,11 @@ public class CustomerController {
 	private CustomerServiceImpl customerService;
 
 	List<CustomerModel> list = new ArrayList<CustomerModel>();
-
+	
 	@RequestMapping(value = "/addcustomer", method = RequestMethod.POST)
 	public CustomerModel addCustomer(@RequestBody CustomerModel customerModel) throws ResourceAlreadyExistException{
+		System.out.println("Test For Git hub");
+		
 		return customerService.addCustomer(customerModel);
 	}
 
